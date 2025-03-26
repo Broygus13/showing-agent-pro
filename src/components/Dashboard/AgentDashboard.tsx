@@ -4,6 +4,7 @@ import { ShowingRequestsList } from '../ShowingRequestsList';
 import { SearchAndFilter } from '../SearchAndFilter';
 import { Header } from '../Navigation/Header';
 import { NotificationSystem } from '../Notifications/NotificationSystem';
+import { AgentPreferencesForm } from '../AgentPreferences/AgentPreferencesForm';
 import { collection, query, where, onSnapshot, addDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -13,6 +14,7 @@ export function AgentDashboard() {
   const [filteredRequests, setFilteredRequests] = useState<ShowingRequest[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState({ status: 'all', dateRange: 'all' });
+  const [activeTab, setActiveTab] = useState<'requests' | 'preferences'>('requests');
   const { user } = useAuth();
 
   useEffect(() => {
@@ -115,26 +117,58 @@ export function AgentDashboard() {
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Create New Showing Request</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Agent Dashboard</h2>
             <NotificationSystem />
           </div>
-          
-          <div className="mb-8">
-            <ShowingRequestForm onSubmit={handleNewRequest} />
+
+          {/* Tab Navigation */}
+          <div className="border-b border-gray-200 mb-6">
+            <nav className="-mb-px flex space-x-8">
+              <button
+                onClick={() => setActiveTab('requests')}
+                className={`${
+                  activeTab === 'requests'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+              >
+                Showing Requests
+              </button>
+              <button
+                onClick={() => setActiveTab('preferences')}
+                className={`${
+                  activeTab === 'preferences'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+              >
+                Agent Preferences
+              </button>
+            </nav>
           </div>
           
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Your Showing Requests</h2>
-            <SearchAndFilter
-              onSearch={setSearchQuery}
-              onFilterChange={setFilters}
-            />
-            <ShowingRequestsList
-              requests={filteredRequests}
-              onAcceptRequest={handleAcceptRequest}
-              onCompleteRequest={handleCompleteRequest}
-            />
-          </div>
+          {activeTab === 'requests' ? (
+            <>
+              <div className="mb-8">
+                <ShowingRequestForm onSubmit={handleNewRequest} />
+              </div>
+              
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Your Showing Requests</h2>
+                <SearchAndFilter
+                  onSearch={setSearchQuery}
+                  onFilterChange={setFilters}
+                />
+                <ShowingRequestsList
+                  requests={filteredRequests}
+                  onAcceptRequest={handleAcceptRequest}
+                  onCompleteRequest={handleCompleteRequest}
+                />
+              </div>
+            </>
+          ) : (
+            <AgentPreferencesForm />
+          )}
         </div>
       </div>
     </div>
