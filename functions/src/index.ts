@@ -154,33 +154,53 @@ async function escalateToNextAgent(
 export const onNewShowingRequest = onDocumentCreated(
     "showingRequests/{requestId}",
     async (event) => {
+      console.log("Function triggered with event:", JSON.stringify(event));
       const requestId = event.params.requestId;
+      console.log("Request ID:", requestId);
       const request = event.data?.data() as ShowingRequest;
+      console.log("Request data:", JSON.stringify(request));
 
-      if (!request) return;
+      if (!request) {
+        console.log("No request data found");
+        return;
+      }
 
-      // Get requesting agent's preferences
-      const preferredAgents = await getAgentPreferences(request.assignedAgentId || "");
+      // Get requesting agent's preferences if assignedAgentId exists
+      let preferredAgents: PreferredAgent[] = [];
+      if (request.assignedAgentId) {
+        console.log("Getting preferences for agent:", request.assignedAgentId);
+        preferredAgents = await getAgentPreferences(request.assignedAgentId);
+        console.log("Found preferred agents:", JSON.stringify(preferredAgents));
+      } else {
+        console.log("No assigned agent ID found");
+      }
 
       // Initialize escalation
+      console.log("Initializing escalation");
       await event.data?.ref.update({
         currentEscalationIndex: 0,
         escalationStartTime: admin.firestore.FieldValue.serverTimestamp(),
       });
 
-      // Send notification to first preferred agent
+      // Send notification to first preferred agent if available
       if (preferredAgents.length > 0) {
+        console.log("Sending notification to first preferred agent:", preferredAgents[0].id);
         await sendNotificationToAgent(preferredAgents[0].id, requestId);
       } else {
-      // If no preferred agents, mark as public immediately
+        console.log("No preferred agents found, marking as public");
+        // If no preferred agents, mark as public immediately
         const allAgents = await getAllShowingAgents();
+        console.log("Found all agents:", JSON.stringify(allAgents));
         await event.data?.ref.update({
           isPublic: true,
           currentEscalationIndex: 0,
         });
 
         if (allAgents.length > 0) {
+          console.log("Sending notification to first available agent:", allAgents[0].id);
           await sendNotificationToAgent(allAgents[0].id, requestId);
+        } else {
+          console.log("No agents available");
         }
       }
     },
@@ -205,8 +225,8 @@ export const onRequestStatusChange = onDocumentUpdated(
       const escalationStartTime = afterData.escalationStartTime || now;
       const timeSinceEscalation = now.toMillis() - escalationStartTime.toMillis();
 
-      // If 5 minutes have passed since last escalation
-      if (timeSinceEscalation >= 5 * 60 * 1000) {
+      // If 30 seconds have passed since last escalation (changed from 5 minutes)
+      if (timeSinceEscalation >= 30 * 1000) {
         if (afterData.isPublic) {
         // For public requests, escalate to next available agent
           const allAgents = await getAllShowingAgents();
@@ -224,9 +244,9 @@ export const onRequestStatusChange = onDocumentUpdated(
         }
       }
 
-      // If 15 minutes have passed since request creation and still pending
+      // If 2 minutes have passed since request creation and still pending (changed from 15 minutes)
       const timeSinceCreation = now.toMillis() - afterData.createdAt.toMillis();
-      if (timeSinceCreation >= 15 * 60 * 1000 && afterData.status === "pending" && !afterData.isPublic) {
+      if (timeSinceCreation >= 2 * 60 * 1000 && afterData.status === "pending" && !afterData.isPublic) {
       // Mark as public and notify all available agents
         const allAgents = await getAllShowingAgents();
         await event.data?.after.ref.update({
