@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "../../services/firebase";
+import React from "react";
 import { ShowingRequestEscalation } from "./ShowingRequestEscalation";
 import { AcceptRequestButton } from "./AcceptRequestButton";
 import { UserProfile } from "../../services/authService";
+import { useRequestListener } from "../../hooks/useRequestListener";
 
 interface ShowingRequestDetailsProps {
   requestId: string;
@@ -11,56 +10,12 @@ interface ShowingRequestDetailsProps {
   allAgents: UserProfile[];
 }
 
-interface ShowingRequest {
-  propertyId: string;
-  clientName: string;
-  clientEmail: string;
-  clientPhone: string;
-  preferredDate: Date;
-  status: string;
-  assignedAgentId?: string;
-  createdAt: Date;
-  updatedAt: Date;
-  isPublic?: boolean;
-  notifiedAgents?: string[];
-}
-
 export const ShowingRequestDetails: React.FC<ShowingRequestDetailsProps> = ({
   requestId,
   preferredAgents,
   allAgents,
 }) => {
-  const [request, setRequest] = useState<ShowingRequest | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const requestRef = doc(db, "showingRequests", requestId);
-    const unsubscribe = onSnapshot(
-      requestRef,
-      (doc) => {
-        if (doc.exists()) {
-          const data = doc.data();
-          setRequest({
-            ...data,
-            preferredDate: data.preferredDate?.toDate(),
-            createdAt: data.createdAt?.toDate(),
-            updatedAt: data.updatedAt?.toDate(),
-          } as ShowingRequest);
-        } else {
-          setError("Request not found");
-        }
-        setLoading(false);
-      },
-      (error) => {
-        console.error("Error fetching request:", error);
-        setError("Error loading request details");
-        setLoading(false);
-      }
-    );
-
-    return () => unsubscribe();
-  }, [requestId]);
+  const { request, loading, error } = useRequestListener(requestId);
 
   if (loading) {
     return (
@@ -82,19 +37,40 @@ export const ShowingRequestDetails: React.FC<ShowingRequestDetailsProps> = ({
     return null;
   }
 
+  // Find the accepting agent's name
+  const acceptingAgent = request.acceptedBy 
+    ? allAgents.find(agent => agent.uid === request.acceptedBy)
+    : null;
+
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">Showing Request Details</h2>
-          <AcceptRequestButton 
-            requestId={requestId}
-            currentStatus={request.status}
-            onAccept={() => {
-              // The status change will be handled by the Firestore listener
-              // No need for additional logic here
-            }}
-          />
+          {request.status === 'accepted' ? (
+            <div className="bg-green-50 border border-green-200 rounded-md px-4 py-2">
+              <p className="text-green-800">
+                This request has been accepted by{' '}
+                <span className="font-semibold">
+                  {acceptingAgent?.name || 'an agent'}
+                </span>
+                {request.acceptedAt && (
+                  <span className="text-sm text-green-600 block">
+                    on {request.acceptedAt.toLocaleString()}
+                  </span>
+                )}
+              </p>
+            </div>
+          ) : (
+            <AcceptRequestButton 
+              requestId={requestId}
+              currentStatus={request.status}
+              onAccept={() => {
+                // The status change will be handled by the Firestore listener
+                // No need for additional logic here
+              }}
+            />
+          )}
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
