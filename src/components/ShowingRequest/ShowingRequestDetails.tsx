@@ -1,6 +1,7 @@
 import React from "react";
 import { ShowingRequestEscalation } from "./ShowingRequestEscalation";
 import { AcceptRequestButton } from "./AcceptRequestButton";
+import { PostShowingConfirmation } from "./PostShowingConfirmation";
 import { UserProfile } from "../../services/authService";
 import { useRequestListener } from "../../hooks/useRequestListener";
 
@@ -104,10 +105,35 @@ export const ShowingRequestDetails: React.FC<ShowingRequestDetailsProps> = ({
                 <span className="font-medium">Status:</span>{" "}
                 <span className="capitalize">{request.status}</span>
               </p>
+              {request.completed && (
+                <p>
+                  <span className="font-medium">Completed:</span>{" "}
+                  <span className="text-green-600">Yes</span>
+                  {request.completedAt && (
+                    <span className="text-sm text-gray-500 block">
+                      on {request.completedAt.toLocaleString()}
+                    </span>
+                  )}
+                </p>
+              )}
             </div>
           </div>
         </div>
+
+        {request.feedback && (
+          <div className="mt-4 pt-4 border-t">
+            <h3 className="text-lg font-semibold mb-2">Showing Feedback</h3>
+            <p className="text-gray-700 whitespace-pre-wrap">{request.feedback}</p>
+          </div>
+        )}
       </div>
+
+      {request.status === 'accepted' && !request.completed && request.acceptedBy && (
+        <PostShowingConfirmation
+          requestId={requestId}
+          acceptedBy={request.acceptedBy}
+        />
+      )}
 
       <ShowingRequestEscalation
         requestId={requestId}

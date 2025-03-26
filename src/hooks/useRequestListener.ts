@@ -12,6 +12,9 @@ export interface ShowingRequest {
   assignedAgentId?: string;
   acceptedBy?: string;
   acceptedAt?: Date;
+  completed?: boolean;
+  completedAt?: Date;
+  feedback?: string;
   createdAt: Date;
   updatedAt: Date;
   isPublic?: boolean;
@@ -37,6 +40,7 @@ export function useRequestListener(requestId: string) {
             createdAt: data.createdAt?.toDate(),
             updatedAt: data.updatedAt?.toDate(),
             acceptedAt: data.acceptedAt?.toDate(),
+            completedAt: data.completedAt?.toDate(),
           } as ShowingRequest);
         } else {
           setError('Request not found');
