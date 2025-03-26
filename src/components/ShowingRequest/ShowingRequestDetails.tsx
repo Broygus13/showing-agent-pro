@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../services/firebase";
 import { ShowingRequestEscalation } from "./ShowingRequestEscalation";
+import { AcceptRequestButton } from "./AcceptRequestButton";
 import { UserProfile } from "../../services/authService";
 
 interface ShowingRequestDetailsProps {
@@ -84,7 +85,17 @@ export const ShowingRequestDetails: React.FC<ShowingRequestDetailsProps> = ({
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-2xl font-bold mb-4">Showing Request Details</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold">Showing Request Details</h2>
+          <AcceptRequestButton 
+            requestId={requestId}
+            currentStatus={request.status}
+            onAccept={() => {
+              // The status change will be handled by the Firestore listener
+              // No need for additional logic here
+            }}
+          />
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
