@@ -5,9 +5,15 @@ interface ShowingRequestsListProps {
   requests: ShowingRequest[];
   onAcceptRequest: (id: string) => void;
   onCompleteRequest: (id: string) => void;
+  showAcceptButton?: boolean;
 }
 
-export function ShowingRequestsList({ requests, onAcceptRequest, onCompleteRequest }: ShowingRequestsListProps) {
+export function ShowingRequestsList({ 
+  requests, 
+  onAcceptRequest, 
+  onCompleteRequest,
+  showAcceptButton = true 
+}: ShowingRequestsListProps) {
   return (
     <div className="max-w-4xl mx-auto p-6">
       <h2 className="text-2xl font-bold mb-6 text-gray-800">Showing Requests</h2>
@@ -39,7 +45,7 @@ export function ShowingRequestsList({ requests, onAcceptRequest, onCompleteReque
             )}
 
             <div className="flex justify-end space-x-3">
-              {request.status === 'pending' && (
+              {request.status === 'pending' && showAcceptButton && (
                 <button
                   onClick={() => onAcceptRequest(request.id)}
                   className="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
