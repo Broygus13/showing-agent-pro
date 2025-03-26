@@ -7,8 +7,9 @@ import { collection, query, where, onSnapshot, doc, updateDoc } from 'firebase/f
 import { db } from '../../firebase';
 import { useAuth } from '../../contexts/AuthContext';
 import { ShowingRequest } from '../ShowingRequestForm';
+import { EditProfile } from '../Profile/EditProfile';
 
-export function ShowingAgentDashboard() {
+export const ShowingAgentDashboard: React.FC = () => {
   const [availableRequests, setAvailableRequests] = useState<ShowingRequest[]>([]);
   const [myRequests, setMyRequests] = useState<ShowingRequest[]>([]);
   const [filteredAvailableRequests, setFilteredAvailableRequests] = useState<ShowingRequest[]>([]);
@@ -132,35 +133,47 @@ export function ShowingAgentDashboard() {
       
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Available Showing Requests</h2>
-            <NotificationSystem />
-          </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-8">Showing Agent Dashboard</h1>
           
-          <div className="mb-8">
-            <SearchAndFilter
-              onSearch={setSearchQuery}
-              onFilterChange={setFilters}
-            />
-            <ShowingRequestsList
-              requests={filteredAvailableRequests}
-              onAcceptRequest={handleAcceptRequest}
-              onCompleteRequest={handleCompleteRequest}
-              showAcceptButton={true}
-            />
-          </div>
-          
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">My Assigned Showings</h2>
-            <ShowingRequestsList
-              requests={filteredMyRequests}
-              onAcceptRequest={handleAcceptRequest}
-              onCompleteRequest={handleCompleteRequest}
-              showAcceptButton={false}
-            />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Main content area */}
+            <div className="lg:col-span-2">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Available Showing Requests</h2>
+                <NotificationSystem />
+              </div>
+              
+              <div className="mb-8">
+                <SearchAndFilter
+                  onSearch={setSearchQuery}
+                  onFilterChange={setFilters}
+                />
+                <ShowingRequestsList
+                  requests={filteredAvailableRequests}
+                  onAcceptRequest={handleAcceptRequest}
+                  onCompleteRequest={handleCompleteRequest}
+                  showAcceptButton={true}
+                />
+              </div>
+              
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">My Assigned Showings</h2>
+                <ShowingRequestsList
+                  requests={filteredMyRequests}
+                  onAcceptRequest={handleAcceptRequest}
+                  onCompleteRequest={handleCompleteRequest}
+                  showAcceptButton={false}
+                />
+              </div>
+            </div>
+
+            {/* Sidebar with profile */}
+            <div className="lg:col-span-1">
+              <EditProfile />
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
-} 
+}; 

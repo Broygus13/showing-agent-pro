@@ -8,8 +8,9 @@ import { AgentPreferencesForm } from '../AgentPreferences/AgentPreferencesForm';
 import { collection, query, where, onSnapshot, addDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useAuth } from '../../contexts/AuthContext';
+import { EditProfile } from '../Profile/EditProfile';
 
-export function AgentDashboard() {
+export const AgentDashboard: React.FC = () => {
   const [showingRequests, setShowingRequests] = useState<ShowingRequest[]>([]);
   const [filteredRequests, setFilteredRequests] = useState<ShowingRequest[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -169,8 +170,20 @@ export function AgentDashboard() {
           ) : (
             <AgentPreferencesForm />
           )}
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+            {/* Main content area */}
+            <div className="lg:col-span-2">
+              {/* Add your main dashboard content here */}
+            </div>
+
+            {/* Sidebar with profile */}
+            <div className="lg:col-span-1">
+              <EditProfile />
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
-} 
+}; 
