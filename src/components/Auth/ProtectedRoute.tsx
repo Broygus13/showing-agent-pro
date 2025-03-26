@@ -4,10 +4,9 @@ import { useAuth } from '../../contexts/AuthContext';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: 'agent' | 'showing_agent';
 }
 
-export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { user, loading } = useAuth();
   const location = useLocation();
 
@@ -20,14 +19,14 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
   }
 
   if (!user) {
-    // Redirect to login page but save the attempted location
+    // Redirect to login if not authenticated
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (requiredRole && user.role !== requiredRole) {
-    // Redirect to home if user doesn't have required role
-    return <Navigate to="/" replace />;
+  if (!user.completedOnboarding) {
+    // Redirect to onboarding if not completed
+    return <Navigate to="/onboarding" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;
-} 
+}; 

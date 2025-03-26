@@ -16,6 +16,12 @@ export interface UserProfile {
   email: string | null;
   name: string;
   role: 'agent' | 'showing_agent';
+  fullName?: string;
+  phoneNumber?: string;
+  licenseNumber?: string;
+  brokerage?: string;
+  completedOnboarding?: boolean;
+  updatedAt?: Date;
 }
 
 class AuthService {

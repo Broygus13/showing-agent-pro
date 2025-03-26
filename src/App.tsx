@@ -1,22 +1,13 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import { ProtectedRoute } from './components/Auth/ProtectedRoute';
+import { OnboardingFlow } from './components/Onboarding/OnboardingFlow';
 import { SignIn } from './components/Auth/SignIn';
 import { SignUp } from './components/Auth/SignUp';
-import { ProtectedRoute } from './components/Auth/ProtectedRoute';
 import { AgentDashboard } from './components/Dashboard/AgentDashboard';
 import { ShowingAgentDashboard } from './components/Dashboard/ShowingAgentDashboard';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
 import './App.css';
-
-function Dashboard() {
-  const { user } = useAuth();
-
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return user.role === 'agent' ? <AgentDashboard /> : <ShowingAgentDashboard />;
-}
 
 function App() {
   return (
@@ -25,15 +16,27 @@ function App() {
         <Routes>
           <Route path="/login" element={<SignIn onSignIn={() => {}} />} />
           <Route path="/signup" element={<SignUp onSignUp={() => {}} />} />
+          <Route path="/onboarding" element={<OnboardingFlow />} />
+          
           <Route
-            path="/"
+            path="/dashboard"
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <AgentDashboard />
               </ProtectedRoute>
             }
           />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          
+          <Route
+            path="/showing-dashboard"
+            element={
+              <ProtectedRoute>
+                <ShowingAgentDashboard />
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </AuthProvider>
     </Router>
