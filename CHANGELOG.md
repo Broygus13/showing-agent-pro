@@ -34,6 +34,13 @@ All notable changes to the ShowingAgent Pro project will be documented in this f
   - Custom hook for real-time request updates
   - Showing completion feedback system
   - Automatic UI updates on status changes
+  - Dynamic pricing display for showing agents
+    - Real-time price calculation based on agent preferences
+    - Support for all pricing modes (Flat Rate, Distance-Based, Property Value-Based)
+    - Distance calculation between property and agent base location
+    - Property value-based pricing tiers
+    - Loading states during price calculation
+    - Price display in agent selection list
 
 - Dashboard improvements
   - Separate dashboards for agents and showing agents
@@ -68,6 +75,12 @@ All notable changes to the ShowingAgent Pro project will be documented in this f
     - Distance-based pricing configuration
     - Property value-based pricing configuration
 
+- Updated showing request data model to include:
+  - Property price
+  - Final agreed price
+  - Pricing mode used
+  - Distance from agent's base location (for distance-based pricing)
+
 - Improved authentication flow
   - Added role-based access control
   - Protected routes
@@ -86,6 +99,9 @@ All notable changes to the ShowingAgent Pro project will be documented in this f
 - Improved form state management
 - Added TypeScript interfaces for pricing data
 - Enhanced form handling for nested data structures
+- Added pricing calculation service
+- Implemented distance calculation (stub implementation)
+- Enhanced agent selection UI with pricing information
 
 ## [0.1.0] - 2024-03-26
 ### Added
