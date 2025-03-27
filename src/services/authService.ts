@@ -11,6 +11,26 @@ import {
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 
+export interface PricingData {
+  baseLocation: {
+    addressOrZip: string;
+    lat?: number;
+    lng?: number;
+  };
+  pricingMode: 'flat' | 'distance' | 'value';
+  flatRate: number;
+  distanceTiers: {
+    tier1: number;
+    tier2: number;
+    tier3: number;
+  };
+  valueTiers: {
+    under750k: number;
+    midRange: number;
+    over1_5m: number;
+  };
+}
+
 export interface UserProfile {
   uid: string;
   email: string | null;
@@ -22,6 +42,7 @@ export interface UserProfile {
   brokerage?: string;
   completedOnboarding?: boolean;
   updatedAt?: Date;
+  pricing?: PricingData;
 }
 
 class AuthService {

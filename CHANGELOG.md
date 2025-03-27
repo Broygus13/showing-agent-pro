@@ -19,6 +19,11 @@ All notable changes to the ShowingAgent Pro project will be documented in this f
   - Responsive design
   - Profile editing in dashboard sidebar
   - Auto-initialization with current user data
+  - Pricing preferences for showing agents
+    - Base location configuration
+    - Multiple pricing modes (Flat Rate, Distance-Based, Property Value-Based)
+    - Dynamic form fields based on pricing mode
+    - Real-time updates to Firestore
 
 - Showing request management
   - Accept request functionality for showing agents
@@ -57,6 +62,11 @@ All notable changes to the ShowingAgent Pro project will be documented in this f
   - Role
   - Onboarding status
   - Last update timestamp
+  - Pricing preferences (for showing agents)
+    - Base location
+    - Pricing mode and tiers
+    - Distance-based pricing configuration
+    - Property value-based pricing configuration
 
 - Improved authentication flow
   - Added role-based access control
@@ -74,6 +84,8 @@ All notable changes to the ShowingAgent Pro project will be documented in this f
 - Created custom hooks for data management
 - Added success notifications with auto-dismiss
 - Improved form state management
+- Added TypeScript interfaces for pricing data
+- Enhanced form handling for nested data structures
 
 ## [0.1.0] - 2024-03-26
 ### Added
