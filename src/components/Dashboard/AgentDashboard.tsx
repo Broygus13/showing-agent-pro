@@ -9,13 +9,14 @@ import { collection, query, where, onSnapshot, addDoc, doc, updateDoc } from 'fi
 import { db } from '../../firebase';
 import { useAuth } from '../../contexts/AuthContext';
 import { EditProfile } from '../Profile/EditProfile';
+import { AgentReport } from '../Reports/AgentReport';
 
 export const AgentDashboard: React.FC = () => {
   const [showingRequests, setShowingRequests] = useState<ShowingRequest[]>([]);
   const [filteredRequests, setFilteredRequests] = useState<ShowingRequest[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState({ status: 'all', dateRange: 'all' });
-  const [activeTab, setActiveTab] = useState<'requests' | 'preferences'>('requests');
+  const [activeTab, setActiveTab] = useState<'requests' | 'preferences' | 'reports'>('requests');
   const { user } = useAuth();
 
   useEffect(() => {
@@ -145,6 +146,16 @@ export const AgentDashboard: React.FC = () => {
               >
                 Agent Preferences
               </button>
+              <button
+                onClick={() => setActiveTab('reports')}
+                className={`${
+                  activeTab === 'reports'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+              >
+                Reports
+              </button>
             </nav>
           </div>
           
@@ -167,8 +178,13 @@ export const AgentDashboard: React.FC = () => {
                 />
               </div>
             </>
-          ) : (
+          ) : activeTab === 'preferences' ? (
             <AgentPreferencesForm />
+          ) : (
+            <div className="bg-white shadow rounded-lg p-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Showing Reports</h2>
+              <AgentReport />
+            </div>
           )}
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
